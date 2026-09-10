@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import liff from '@line/liff'
 
-const LIFF_ID = import.meta.env.VITE_LIFF_ID
+const LIFF_ID = String(import.meta.env.VITE_LIFF_ID || '').trim()
 
 export default function Login() {
   const navigate = useNavigate()
@@ -52,7 +52,9 @@ export default function Login() {
       } catch (err) {
         console.error('LIFF initialization/login failed:', err)
         if (!cancelled) {
-          setError('เชื่อมต่อ LINE ไม่สำเร็จ กรุณาลองใหม่')
+          const code = err?.code ? ` [${err.code}]` : ''
+          const detail = err?.message ? `: ${err.message}` : ''
+          setError(`เชื่อมต่อ LINE ไม่สำเร็จ${code}${detail}`)
           setStatus('เข้าสู่ระบบไม่สำเร็จ')
         }
       }
@@ -113,7 +115,7 @@ export default function Login() {
             <button
               type="button"
               onClick={loginWithLine}
-              disabled={!ready || !!error}
+              disabled={!ready}
               className="mt-6 flex h-[54px] w-full items-center justify-center rounded-2xl bg-[#06C755] text-[15px] font-extrabold text-white shadow-[0_10px_24px_rgba(6,199,85,0.2)] transition active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <i className="fa-brands fa-line mr-2.5 text-xl" />
