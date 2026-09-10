@@ -9,6 +9,7 @@ import { calculateOrderPricing } from '../../lib/orderPricing.js'
 const CART_KEY = 'petshop_cart'
 const CHECKOUT_DISCOUNT_KEY = 'petshop_checkout_discount'
 const ADDRESS_STORAGE_KEY = 'petshop_addresses'
+const SEED_ADDRESS = { id: 1, recipient: 'อูนิ', phone: '081-234-5678', detail: '99/9 หมู่ 1', subdistrictId: '130201', districtId: '1302', provinceId: '13', subdistrict: 'คลองหนึ่ง', district: 'คลองหลวง', province: 'ปทุมธานี', postalCode: '12120', default: true }
 
 const readCart = () => {
   try {
@@ -30,7 +31,10 @@ const readDiscount = () => {
 
 const readAddresses = () => {
   try {
-    const saved = JSON.parse(localStorage.getItem(ADDRESS_STORAGE_KEY) || '[]')
+    const raw = localStorage.getItem(ADDRESS_STORAGE_KEY)
+    // ถ้ายังไม่เคยเปิดหน้าจัดการที่อยู่ ให้ใช้ที่อยู่เริ่มต้นของระบบก่อน
+    if (raw === null) return [SEED_ADDRESS]
+    const saved = JSON.parse(raw)
     return Array.isArray(saved) ? saved : []
   } catch {
     return []
@@ -64,7 +68,7 @@ export default function Checkout() {
   const [discountInfo, setDiscountInfo] = useState(readDiscount)
   const [promoCode, setPromoCode] = useState(discountInfo.code || '')
   const [promoError, setPromoError] = useState('')
-  const [savedAddresses] = useState(readAddresses)
+  const [savedAddresses, setSavedAddresses] = useState(readAddresses)
   const defaultAddress = savedAddresses.find((item) => item.default || item.isDefault) || savedAddresses[0]
   const [selectedAddressId, setSelectedAddressId] = useState(defaultAddress?.id || null)
   const [address, setAddress] = useState(() => defaultAddress ? {
@@ -76,6 +80,21 @@ export default function Checkout() {
   const defaultPayment = paymentMethods.find((item) => item.default) || paymentMethods[0]
   const [paymentMethod, setPaymentMethod] = useState(defaultPayment?.id || 'cod')
   const [errors, setErrors] = useState({})
+
+  useEffect(() => {
+    const syncAddresses = () => {
+      const next = readAddresses()
+      setSavedAddresses(next)
+      setSelectedAddressId((current) => next.some((item) => String(item.id) === String(current)) ? current : (next.find((item) => item.default || item.isDefault)?.id || next[0]?.id || null))
+    }
+    window.addEventListener('storage', syncAddresses)
+    window.addEventListener('petshop-address-updated', syncAddresses)
+
+    return () => {
+      window.removeEventListener('storage', syncAddresses)
+      window.removeEventListener('petshop-address-updated', syncAddresses)
+    }
+  }, [])
 
   useEffect(() => {
     const syncPaymentMethods = () => {

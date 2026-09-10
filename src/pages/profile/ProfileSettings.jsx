@@ -8,7 +8,6 @@ const PAYMENT_STORAGE_KEY = 'petshop_payment_methods'
 const THAILAND_GEOGRAPHY_URL = 'https://raw.githubusercontent.com/thailand-geography-data/thailand-geography-json/main/src/geography.json'
 const THAILAND_GEOGRAPHY_CACHE = 'petshop_thailand_geography_v2'
 
-const seedAddresses = [{ id: 1, recipient: 'อูนิ', phone: '081-234-5678', detail: '99/9 หมู่ 1', subdistrictId: '130201', districtId: '1302', provinceId: '13', subdistrict: 'คลองหนึ่ง', district: 'คลองหลวง', province: 'ปทุมธานี', postalCode: '12120', default: true }]
 const seedPayments = [
   { id: 1, type: 'promptpay', name: 'พร้อมเพย์', detail: '081-234-5678', icon: 'fa-qrcode', default: true },
   { id: 2, type: 'card', name: 'บัตรเครดิต / เดบิต', detail: '•••• •••• •••• 4242', icon: 'fa-credit-card', default: false },

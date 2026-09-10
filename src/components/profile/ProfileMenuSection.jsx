@@ -59,7 +59,14 @@ export default function ProfileMenuSection() {
   const logout = () => {
     localStorage.removeItem('petshop_profile')
     localStorage.removeItem('petshop_selected_coupon')
-    navigate('/home', { replace: true })
+    localStorage.removeItem('petshop_user_auth')
+    localStorage.removeItem('petshop_user')
+    try {
+      if (window.liff?.isLoggedIn?.()) window.liff.logout()
+    } catch {
+      // Mock logout should still work if LIFF is unavailable.
+    }
+    navigate('/login', { replace: true })
   }
 
   return (

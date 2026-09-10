@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import { useEffect, useMemo, useState } from 'react'
 import { getOrders } from '../../data/orders.js'
+import { getProductsWithAdminOverrides } from '../../data/products.js'
 import { calculateOrderPricing, formatBaht } from '../../lib/orderPricing.js'
 import { getStoreProfile } from '../../lib/store.js'
 import BottomNavigation from '../../components/home/BottomNavigation.jsx'
@@ -12,6 +13,7 @@ export default function OrderSuccess() {
   const orderId = params.get('id') || 'คำสั่งซื้อใหม่'
   const [showContent, setShowContent] = useState(false)
   const order = useMemo(() => getOrders().find((item) => item.id === orderId), [orderId])
+  const products = useMemo(() => getProductsWithAdminOverrides(), [])
   const store = useMemo(() => getStoreProfile(), [])
   const pricing = useMemo(
     () => calculateOrderPricing({ subtotal: order?.subtotal || 0, discount: order?.discount || 0, delivery: order?.delivery || 0 }),
@@ -97,10 +99,15 @@ export default function OrderSuccess() {
               {(order.products || []).map((product, index) => {
                 const qty = Number(product.qty) || 0
                 const unitPrice = Number(product.price) || 0
+                const catalogProduct = products.find((item) => String(item.id) === String(product.id))
+                const image = product.image || product.imageUrl || catalogProduct?.image || catalogProduct?.imageUrl
                 return (
                   <div key={`${product.id || product.name}-${index}`} className="flex items-start gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
-                    <div className="grid size-11 shrink-0 place-items-center rounded-2xl bg-gray-100 text-gray-400">
-                      <i className={`fa-solid ${product.icon || 'fa-box'}`} />
+                    <div className="size-14 shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+                      {image ? (
+                        <img src={image} alt={product.name} className="size-full object-cover" onError={(event) => { event.currentTarget.style.display = 'none'; event.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                      ) : null}
+                      <div className={`size-full place-items-center text-xl text-gray-400 ${image ? 'hidden' : 'grid'}`}><i className={`fa-solid ${product.icon || catalogProduct?.icon || 'fa-box'}`} /></div>
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-bold leading-5 text-gray-800">{product.name}</p>
