@@ -80,8 +80,9 @@ export default function HomeHeader() {
             <i className="fa-solid fa-xmark text-xs" />
           </button>
         )}
+        
         {search.trim() && suggestions.length > 0 && (
-          <div className="absolute left-0 right-0 top-[54px] z-50 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl shadow-gray-900/10">
+          <div className="absolute left-0 right-0 top-[54px] z-50 ovegit rflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl shadow-gray-900/10">
             <p className="px-4 pb-1 pt-3 text-xs font-semibold text-gray-400">สินค้าที่ใกล้เคียง</p>
             {suggestions.map((product) => (
               <button key={product.id} type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => { setSearch(product.name); navigate(`/products?search=${encodeURIComponent(product.name)}`) }} className="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-orange-50 active:bg-gray-100">

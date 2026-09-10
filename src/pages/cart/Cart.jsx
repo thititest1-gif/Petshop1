@@ -113,7 +113,12 @@ export default function Cart() {
           normalizedItems.map((item) => (
             <article key={getItemKey(item)} className="rounded-[24px] border border-gray-100 bg-white p-4 shadow-sm">
               <div className="flex gap-3">
-                <div className="grid size-[82px] shrink-0 place-items-center rounded-[20px] bg-gray-100 text-3xl text-gray-400"><i className={`fa-solid ${item.icon || 'fa-box'}`} /></div>
+                <div className="size-[82px] shrink-0 overflow-hidden rounded-[20px] bg-gray-100">
+                  {item.image ? (
+                    <img src={item.image} alt={item.name} className="size-full object-cover" onError={(event) => { event.currentTarget.style.display = 'none'; event.currentTarget.nextElementSibling?.classList.remove('hidden') }} />
+                  ) : null}
+                  <div className={`size-full place-items-center text-3xl text-gray-400 ${item.image ? 'hidden' : 'grid'}`}><i className={`fa-solid ${item.icon || 'fa-box'}`} /></div>
+                </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-2">
                     <div><h3 className="text-sm font-bold leading-5">{item.name}</h3><p className="mt-1 text-xs text-gray-400">{item.detail || (item.variantLabel ? `ขนาด ${item.variantLabel}` : '')}</p></div>
